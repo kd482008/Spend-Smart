@@ -5,6 +5,7 @@ from datetime import datetime
 # Global Constants
 FILE_NAME = "expenses.csv"
 MONTHLY_BUDGET = 5000.0  # Default budget for a student
+CATEGORIES = ["Food", "Travel", "Shopping", "Bills", "Recharge", "Personal", "Other"]
 
 
 def initialize_file():

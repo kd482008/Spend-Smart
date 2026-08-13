@@ -8,6 +8,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('spendSmartTheme');
+                const theme = savedTheme === 'light' ? 'light' : 'dark';
+                document.documentElement.classList.toggle('light-mode', theme === 'light');
+            } catch (error) {
+                // ignore storage errors
+            }
+        })();
+    </script>
 </head>
 
 <body>
@@ -49,8 +60,8 @@
                 <li data-target="trends-section">
                     <i class="fa-solid fa-arrow-trend-up"></i> Trends
                 </li>
-                <li data-target="student-mode-section">
-                    <i class="fa-solid fa-graduation-cap"></i> Student Mode
+                <li data-target="smart-ai-advisor-section">
+                    <i class="fa-solid fa-robot"></i> Advisor
                 </li>
             </ul>
 
@@ -82,6 +93,13 @@
                         <i class="fa-solid fa-calendar-check"></i>
                         <span id="header-month-label">May 2026</span>
                     </div>
+                        <button id="active-month-calendar-btn" class="icon-btn" title="Open month calendar">
+                            <i class="fa-regular fa-calendar"></i>
+                        </button>
+                        <div id="month-calendar-popup" class="month-calendar-popup hidden" aria-hidden="true"></div>
+                    <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
                     <div class="user-profile">
                         <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User">
                     </div>
@@ -90,98 +108,118 @@
 
             <div class="content-wrapper">
 
-                <!-- SECTION: Dashboard -->
-                <section id="dashboard-section" class="page-section active-section">
-                    <!-- Top Cards -->
-                    <div class="dashboard-cards">
-                        <div class="card stat-card primary-gradient">
-                            <div class="card-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-                            <div class="card-info">
-                                <h3>Total Spent</h3>
-                                <h2 id="dash-total-spent">₹0.00</h2>
+                <!-- SECTION: Dashboard (Report Style) -->
+                <section id="dashboard-section" class="page-section active-section report-layout">
+                    <div class="report-container card" role="region" aria-label="Monthly Report">
+                        <header class="report-header">
+                            <div class="report-brand">
+                                <div class="brand-logo"><i class="fa-solid fa-wallet"></i></div>
+                                <div class="brand-text">
+                                    <div class="brand-name">SpendSmart</div>
+                                    <div class="brand-tag">Smart Spending, Better Living</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card stat-card success-gradient" id="budget-card">
-                            <div class="card-icon"><i class="fa-solid fa-piggy-bank"></i></div>
-                            <div class="card-info">
-                                <h3>Remaining Budget</h3>
-                                <h2 id="dash-remaining">₹0.00</h2>
-                            </div>
-                        </div>
-                        <div class="card stat-card warning-gradient">
-                            <div class="card-icon"><i class="fa-solid fa-fire"></i></div>
-                            <div class="card-info">
-                                <h3>Highest Category</h3>
-                                <h2 id="dash-highest-cat">None</h2>
-                            </div>
-                        </div>
-                        <div class="card stat-card info-gradient">
-                            <div class="card-icon"><i class="fa-solid fa-receipt"></i></div>
-                            <div class="card-info">
-                                <h3>Transactions</h3>
-                                <h2 id="dash-tx-count">0</h2>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Budget Progress Bar -->
-                    <div class="card budget-progress-card">
-                        <div class="budget-progress-header">
-                            <div>
-                                <h4>Budget Usage</h4>
-                                <p class="text-muted" id="budget-progress-label">₹0 of ₹0 used</p>
+                            <div class="report-title">
+                                <h1>SPENDSMART MONTHLY REPORT</h1>
+                                <div class="report-month" id="report-month-title">June 2025</div>
                             </div>
-                            <span class="budget-percent-badge" id="budget-percent-badge">0%</span>
-                        </div>
-                        <div class="budget-progress-track">
-                            <div class="budget-progress-fill" id="budget-progress-fill" style="width: 0%"></div>
-                        </div>
-                    </div>
 
-                    <!-- Smart Suggestions & Recent Expenses -->
-                    <div class="dashboard-grid">
-                        <div class="card suggestions-card">
-                            <div class="card-header">
-                                <h3><i class="fa-solid fa-lightbulb text-yellow"></i> Smart Insights</h3>
+                            <div class="report-meta">
+                                <div>Generated On:<br><strong id="report-generated-date">15 June 2025</strong></div>
+                                <div style="margin-left:12px">Time:<br><strong id="report-generated-time">10:30 PM</strong></div>
+                                <div style="margin-left:18px">
+                                    <button id="generate-report-btn" class="btn btn-primary" style="font-weight:800;">Download PDF</button>
+                                </div>
                             </div>
-                            <div class="card-body" id="suggestions-container">
-                                <p class="text-muted">Add expenses to get personalized insights.</p>
-                            </div>
-                        </div>
+                        </header>
 
-                        <div class="card recent-card">
-                            <div class="card-header flex-between">
-                                <h3>Recent Expenses</h3>
-                                <button class="btn-text" id="view-all-link">View All</button>
+                        <section class="summary-overview">
+                            <div class="summary-card">
+                                <div class="sc-icon bg-blue"><i class="fa-solid fa-wallet"></i></div>
+                                <div class="sc-body">
+                                    <div class="sc-title">TOTAL BUDGET</div>
+                                    <div class="sc-value" id="report-total-budget">₹0.00</div>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <ul class="recent-list" id="recent-expenses-list">
-                                    <p class="text-muted text-center" style="margin-top: 2rem;">No recent expenses.</p>
-                                </ul>
+                            <div class="summary-card">
+                                <div class="sc-icon bg-green"><i class="fa-solid fa-cart-shopping"></i></div>
+                                <div class="sc-body">
+                                    <div class="sc-title">TOTAL SPENT</div>
+                                    <div class="sc-value" id="report-total-spent">₹0.00</div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                            <div class="summary-card">
+                                <div class="sc-icon bg-orange"><i class="fa-solid fa-piggy-bank"></i></div>
+                                <div class="sc-body">
+                                    <div class="sc-title">REMAINING BUDGET</div>
+                                    <div class="sc-value" id="report-remaining-budget">₹0.00</div>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="sc-icon bg-purple"><i class="fa-solid fa-file-invoice"></i></div>
+                                <div class="sc-body">
+                                    <div class="sc-title">TOTAL EXPENSES</div>
+                                    <div class="sc-value" id="report-total-expenses">0<br><span class="sc-sub">Transactions</span></div>
+                                </div>
+                            </div>
+                        </section>
 
-                    <!-- Reminders -->
-                    <div class="dashboard-grid" style="margin-top: 1.5rem; grid-template-columns: 1fr;">
-                        <div class="card reminders-card">
-                            <div class="card-header flex-between">
-                                <h3><i class="fa-solid fa-bell text-primary"></i> Upcoming Reminders</h3>
-                                <button class="btn btn-sm btn-primary" id="toggle-reminder-form">
-                                    <i class="fa-solid fa-plus"></i> New
-                                </button>
+                        <section class="expense-details">
+                            <h4 class="section-heading">EXPENSE DETAILS</h4>
+                            <div class="table-responsive">
+                                <table class="data-table report-table" id="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE</th>
+                                            <th>CATEGORY</th>
+                                            <th>DESCRIPTION</th>
+                                            <th>AMOUNT</th>
+                                            <th>TYPE</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="report-table-body">
+                                        <!-- rows injected by script -->
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="card-body">
-                                <form id="reminder-form" class="hidden reminder-inline-form">
-                                    <input type="text" id="rem-title" placeholder="Reminder Title (e.g., Exam Fee)" required>
-                                    <input type="date" id="rem-date" required>
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </form>
-                                <ul class="recent-list" id="reminders-list">
-                                    <p class="text-muted text-center">No upcoming reminders.</p>
-                                </ul>
+                        </section>
+
+                        <section class="report-bottom">
+                            <div class="category-wise card small-card">
+                                <h5 class="small-heading">CATEGORY WISE SPENDING</h5>
+                                <div class="pie-and-legend">
+                                    <canvas id="category-pie-chart" width="260" height="200"></canvas>
+                                    <ul class="legend-list" id="category-legend">
+                                        <!-- legend items -->
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+
+                            <div class="need-optional card small-card">
+                                <h5 class="small-heading">NEED VS OPTIONAL</h5>
+                                <div class="need-values">
+                                    <div class="need-block">
+                                            <div class="need-label">NEED</div>
+                                            <div class="need-amount" id="report-need-amount">₹0.00</div>
+                                        </div>
+                                    <div class="scale-illustration" aria-hidden="true">
+                                        <div class="scale-base"></div>
+                                        <div class="scale-arm"></div>
+                                    </div>
+                                    <div class="optional-block">
+                                        <div class="optional-label">OPTIONAL</div>
+                                        <div class="optional-amount" id="report-optional-amount">₹0.00</div>
+                                    </div>
+                                </div>
+                                <div class="need-stats">
+                                    <div class="stat-pill"><strong>Need:</strong> <span id="report-need-percent">0%</span></div>
+                                    <div class="stat-pill pill-orange"><strong>Optional:</strong> <span id="report-optional-percent">0%</span></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <footer class="report-footer">Thank you for using SpendSmart. Keep tracking, keep growing!</footer>
                     </div>
                 </section>
 
@@ -445,43 +483,30 @@
                     </div>
                 </section>
 
-                <!-- SECTION: Student Mode -->
-                <section id="student-mode-section" class="page-section">
-                    <div class="card form-card" style="max-width: 700px;">
-                        <div class="card-header">
-                            <h3><i class="fa-solid fa-graduation-cap"></i> Student Budget Mode</h3>
-                            <p class="text-muted">Track pocket money and academic expenses — <strong id="student-month-label">—</strong></p>
+                <!-- SECTION: Smart AI Advisor (replaces Student Mode) -->
+                <section id="smart-ai-advisor-section" class="page-section">
+                    <div class="advisor-grid">
+                        <div class="card advisor-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-robot text-primary"></i> Smart AI Advisor</h3>
+                                <p class="text-muted">Personalized insights and recommendations for your spending</p>
+                            </div>
+                            <div class="card-body" id="smart-advisor-container">
+                                <div class="advisor-intro">
+                                    <div class="ai-avatar" aria-hidden="true"><i class="fa-solid fa-brain"></i></div>
+                                    <p class="advisor-welcome">Smart AI Advisor — actionable finance insights</p>
+                                </div>
+
+                                <div id="smart-insights" class="smart-insights"></div>
+                            </div>
                         </div>
-                        <div class="card-body summary-body">
-                            <div class="summary-item">
-                                <span class="summary-label">Monthly Allowance / Pocket Money</span>
-                                <span class="summary-value" id="student-allowance">₹0.00</span>
+
+                        <div class="card advisor-details-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-circle-info text-secondary"></i> Advisor Details</h3>
                             </div>
-                            <div class="summary-item">
-                                <span class="summary-label">🛏️ Hostel & Food</span>
-                                <span class="summary-value" id="student-hostel-spent">₹0.00</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">📚 Exams & Study Materials</span>
-                                <span class="summary-value" id="student-academic-spent">₹0.00</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">🛍️ Other Spending</span>
-                                <span class="summary-value" id="student-other-spent">₹0.00</span>
-                            </div>
-                            <div class="summary-divider"></div>
-                            <div class="summary-item total-row">
-                                <span class="summary-label">Savings This Month</span>
-                                <span class="summary-value" id="student-savings">₹0.00</span>
-                            </div>
-                            <div class="budget-status-bar-container mt-4">
-                                <div class="budget-status-labels">
-                                    <span>Savings Rate</span>
-                                    <span id="student-savings-percent">0%</span>
-                                </div>
-                                <div class="budget-status-bar">
-                                    <div class="budget-fill" id="student-savings-bar" style="width: 0%; background: var(--success);"></div>
-                                </div>
+                            <div class="card-body" id="smart-advisor-details">
+                                <p class="text-muted">Key metrics and recommendations will appear here. Add expenses to get personalized suggestions.</p>
                             </div>
                         </div>
                     </div>
