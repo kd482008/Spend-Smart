@@ -960,7 +960,8 @@ function renderReportView() {
     if (!data.expenses.length) {
         tbody.innerHTML = '<tr><td colspan="5" class="text-muted">No expenses recorded for this month.</td></tr>';
     } else {
-        tbody.innerHTML = data.expenses.map((expense) => {
+        const expensesByDate = [...data.expenses].sort((a, b) => new Date(a.date) - new Date(b.date));
+        tbody.innerHTML = expensesByDate.map((expense) => {
             const typeClass = expense.type === 'Need' ? 'type-need' : 'type-opt';
             const meta = categoryMeta[expense.category] || categoryMeta.Other;
             return `
