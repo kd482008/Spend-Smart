@@ -17,14 +17,15 @@ Many individuals struggle to keep track of their daily expenses and often oversp
 2. **Log Expenses**: A clean form to add expenses with attributes like Date, Category, Amount, and Description.
 3. **Pre-defined Categories**: Food, Travel, Shopping, Bills, Recharge, Personal, and Other.
 4. **Expense History Table**: A formatted data table showing all past expenses with the ability to delete specific entries.
-5. **Spending Analysis**: Visual progress bars mapping out category-wise spending.
-6. **Dynamic Budget Warning**: The remaining budget card automatically changes color (Green -> Yellow -> Red) as you get closer to or exceed your monthly budget.
-7. **Smart Suggestions Engine**: Uses advanced conditional logic to provide personalized financial advice (e.g., "Shopping is taking up a huge chunk of your budget. Pause buying non-essentials") based on calculated spending percentages.
+5. **Private Wallet**: An isolated savings tracker for deposits recorded by amount and date. It uses its own `privateWallet` localStorage key and is excluded from spending, budgets, transactions, analytics, and advice.
+6. **Spending Analysis**: Visual progress bars mapping out category-wise spending.
+7. **Dynamic Budget Warning**: The remaining budget card automatically changes color (Green -> Yellow -> Red) as you get closer to or exceed your monthly budget.
+8. **Smart Suggestions Engine**: Uses advanced conditional logic to provide personalized financial advice (e.g., "Shopping is taking up a huge chunk of your budget. Pause buying non-essentials") based on calculated spending percentages.
 
 ## ⚙️ Working Explanation
 1. **Initialization**: When `index.html` is opened, JavaScript checks `localStorage` for any previously saved expenses and loads them immediately.
 2. **SPA Navigation**: Clicking sidebar links dynamically hides/shows different sections of the app smoothly, creating a fast, app-like experience.
-3. **Data Handling**: Submitting the 'Log Expense' form pushes a new JSON object into the `expenses` array, which is instantly stringified and saved to `localStorage`.
+3. **Data Handling**: Submitting the 'Log Expense' form pushes a new JSON object into the `expenses` array, which is instantly stringified and saved to `localStorage`. Private Wallet deposits are stored separately under `privateWallet` and are never included in expense calculations.
 4. **Analysis Engine**: Every time a change occurs, the script recalculates the total spent using array `reduce()`, calculates category thresholds, and dynamically injects warning messages and UI updates into the DOM.
 
 ## 📚 Learning Outcome
@@ -41,4 +42,3 @@ By building this project, a beginner learns:
 * **Export to CSV**: Add a button to download the expense history as an Excel/CSV file.
 
 ---
-

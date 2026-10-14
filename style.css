@@ -534,6 +534,180 @@ html {
     transform: translateY(-4px);
 }
 
+.private-wallet-card {
+    margin-top: 1.5rem;
+    border-color: rgba(16, 185, 129, 0.35);
+    background:
+        radial-gradient(ellipse at top right, rgba(16, 185, 129, 0.12), transparent 45%),
+        var(--card-bg);
+}
+
+.private-wallet-header,
+.private-wallet-summary,
+.private-wallet-dialog-header,
+.private-wallet-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.private-wallet-header {
+    margin-bottom: 1.25rem;
+}
+
+.private-wallet-header h2,
+.private-wallet-dialog-header h2 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.private-wallet-header h2 i,
+.private-wallet-dialog-header h2 i {
+    color: var(--success);
+    margin-right: 0.4rem;
+}
+
+.private-wallet-caption,
+.private-wallet-total-label {
+    margin: 0.25rem 0 0;
+    color: var(--text-light);
+}
+
+.private-wallet-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    color: #047857;
+    background: rgba(16, 185, 129, 0.12);
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.private-wallet-summary {
+    align-items: flex-end;
+    margin-bottom: 1.25rem;
+}
+
+.private-wallet-total-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.private-wallet-total {
+    margin: 0.15rem 0 0;
+    color: var(--success);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+
+.private-wallet-entry-count {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.private-wallet-history {
+    margin-top: 1.75rem;
+}
+
+.private-wallet-history h3 {
+    margin: 0 0 0.75rem;
+    color: var(--text-main);
+    font-size: 1rem;
+}
+
+.private-wallet-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.private-wallet-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.private-wallet-entry-amount {
+    color: var(--success);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.private-wallet-empty {
+    padding: 1rem;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-light);
+    text-align: center;
+}
+
+.private-wallet-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(2, 6, 23, 0.72);
+    backdrop-filter: blur(5px);
+}
+
+.private-wallet-dialog {
+    width: min(100%, 460px);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    animation: scaleIn 0.2s ease;
+}
+
+.private-wallet-dialog-header {
+    margin-bottom: 1.5rem;
+}
+
+.private-wallet-dialog-header .icon-btn {
+    flex: 0 0 auto;
+}
+
+.private-wallet-amount-input {
+    position: relative;
+}
+
+.private-wallet-amount-input > span {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-weight: 700;
+}
+
+.private-wallet-amount-input input {
+    padding-left: 2.25rem;
+}
+
+.private-wallet-form-actions {
+    justify-content: flex-end;
+    margin-top: 1.75rem;
+}
+
+.private-wallet-cancel-btn {
+    background: var(--month-nav-bg);
+    color: var(--text-main);
+}
+
 /* ============ DASHBOARD CARDS ============ */
 .dashboard-cards {
     display: grid;
@@ -2130,6 +2304,25 @@ select option:hover {
     .month-badge {
         padding: 0.3rem 0.65rem;
         font-size: 0.65rem;
+    }
+
+    .private-wallet-summary {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .private-wallet-header {
+        align-items: flex-start;
+    }
+
+    .private-wallet-badge {
+        padding: 0.35rem 0.55rem;
+        font-size: 0.72rem;
+    }
+
+    .private-wallet-dialog {
+        padding: 1.25rem;
     }
 }
 

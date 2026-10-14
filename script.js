@@ -1,4 +1,5 @@
 ﻿const STORAGE_KEY = 'spendSmartDashboardData';
+const PRIVATE_WALLET_STORAGE_KEY = 'privateWallet';
 const THEME_KEY = 'spendSmartTheme';
 const MONTHS_TO_SHOW = 12;
 const DEFAULT_THEME = 'dark';
@@ -30,6 +31,7 @@ let state = {
 };
 
 let pdfLibLoadPromise = null;
+let privateWalletEntries = [];
 
 function loadPdfLibraries() {
     if (window.jspdf && typeof window.jspdf.jsPDF === 'function') {
@@ -132,7 +134,17 @@ const dom = {
     monthCalendarPopup: document.getElementById('month-calendar-popup'),
     toast: document.getElementById('toast'),
     toastMessage: document.getElementById('toast-message'),
-    themeToggleBtn: document.getElementById('theme-toggle-btn')
+    themeToggleBtn: document.getElementById('theme-toggle-btn'),
+    privateWalletAddBtn: document.getElementById('private-wallet-add-btn'),
+    privateWalletModal: document.getElementById('private-wallet-modal'),
+    privateWalletCloseBtn: document.getElementById('private-wallet-close-btn'),
+    privateWalletCancelBtn: document.getElementById('private-wallet-cancel-btn'),
+    privateWalletForm: document.getElementById('private-wallet-form'),
+    privateWalletAmount: document.getElementById('private-wallet-amount'),
+    privateWalletDate: document.getElementById('private-wallet-date'),
+    privateWalletTotal: document.getElementById('private-wallet-total'),
+    privateWalletEntryCount: document.getElementById('private-wallet-entry-count'),
+    privateWalletHistoryList: document.getElementById('private-wallet-history-list')
 };
 
 
@@ -241,6 +253,110 @@ function saveState() {
         dataByMonth: state.dataByMonth,
         theme: state.theme
     }));
+}
+
+function isValidPrivateWalletDate(date) {
+    if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+    const [year, month, day] = date.split('-').map(Number);
+    const parsedDate = new Date(year, month - 1, day);
+    return parsedDate.getFullYear() === year
+        && parsedDate.getMonth() === month - 1
+        && parsedDate.getDate() === day;
+}
+
+function loadPrivateWallet() {
+    let stored;
+    try {
+        stored = localStorage.getItem(PRIVATE_WALLET_STORAGE_KEY);
+    } catch (error) {
+        console.error('Unable to access Private Wallet storage.', error);
+        showToast('Private Wallet storage is unavailable');
+        return [];
+    }
+    if (!stored) return [];
+    try {
+        const parsed = JSON.parse(stored);
+        if (!Array.isArray(parsed)) throw new TypeError('Private Wallet data must be an array.');
+        return parsed
+            .filter((entry) => entry
+                && Number.isFinite(entry.amount)
+                && entry.amount > 0
+                && isValidPrivateWalletDate(entry.date))
+            .map((entry) => ({ amount: entry.amount, date: entry.date }));
+    } catch (error) {
+        console.warn('Unable to load saved Private Wallet data.', error);
+        return [];
+    }
+}
+
+function savePrivateWallet() {
+    localStorage.setItem(PRIVATE_WALLET_STORAGE_KEY, JSON.stringify(privateWalletEntries));
+}
+
+function formatPrivateWalletCurrency(amount) {
+    return `₹${amount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+}
+
+function formatPrivateWalletDate(date) {
+    const [year, month, day] = date.split('-').map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+    });
+}
+
+function renderPrivateWallet() {
+    if (!dom.privateWalletTotal || !dom.privateWalletHistoryList) return;
+    const total = privateWalletEntries.reduce((sum, entry) => sum + entry.amount, 0);
+    dom.privateWalletTotal.textContent = formatPrivateWalletCurrency(total);
+    if (dom.privateWalletEntryCount) {
+        const count = privateWalletEntries.length;
+        dom.privateWalletEntryCount.textContent = `${count} saving ${count === 1 ? 'entry' : 'entries'}`;
+    }
+
+    dom.privateWalletHistoryList.replaceChildren();
+    const newestFirst = privateWalletEntries
+        .map((entry, index) => ({ entry, index }))
+        .sort((a, b) => b.entry.date.localeCompare(a.entry.date) || a.index - b.index);
+    if (!newestFirst.length) {
+        const emptyItem = document.createElement('li');
+        emptyItem.className = 'private-wallet-empty';
+        emptyItem.textContent = 'No savings recorded yet. Add money to start your private savings history.';
+        dom.privateWalletHistoryList.appendChild(emptyItem);
+        return;
+    }
+
+    newestFirst.forEach(({ entry }) => {
+        const item = document.createElement('li');
+        item.className = 'private-wallet-entry';
+        const date = document.createElement('span');
+        date.textContent = formatPrivateWalletDate(entry.date);
+        const amount = document.createElement('span');
+        amount.className = 'private-wallet-entry-amount';
+        amount.textContent = `+${formatPrivateWalletCurrency(entry.amount)}`;
+        item.append(date, amount);
+        dom.privateWalletHistoryList.appendChild(item);
+    });
+}
+
+function getLocalDateString() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+}
+
+function openPrivateWalletModal() {
+    if (!dom.privateWalletModal) return;
+    dom.privateWalletModal.classList.remove('hidden');
+    dom.privateWalletModal.setAttribute('aria-hidden', 'false');
+    if (dom.privateWalletDate) dom.privateWalletDate.value = getLocalDateString();
+    if (dom.privateWalletAmount) dom.privateWalletAmount.focus();
+}
+
+function closePrivateWalletModal() {
+    if (!dom.privateWalletModal) return;
+    dom.privateWalletModal.classList.add('hidden');
+    dom.privateWalletModal.setAttribute('aria-hidden', 'true');
 }
 
 function applyTheme(theme) {
@@ -796,6 +912,7 @@ function renderAll() {
     renderReminders();
     renderSuggestions();
     renderReportView();
+    renderPrivateWallet();
 }
 
 function renderReportView() {
@@ -925,6 +1042,55 @@ function setupNavigation() {
 }
 
 function initEventHandlers() {
+    if (dom.privateWalletAddBtn) {
+        dom.privateWalletAddBtn.addEventListener('click', openPrivateWalletModal);
+    }
+    if (dom.privateWalletCloseBtn) {
+        dom.privateWalletCloseBtn.addEventListener('click', closePrivateWalletModal);
+    }
+    if (dom.privateWalletCancelBtn) {
+        dom.privateWalletCancelBtn.addEventListener('click', closePrivateWalletModal);
+    }
+    if (dom.privateWalletModal) {
+        dom.privateWalletModal.addEventListener('click', (event) => {
+            if (event.target === dom.privateWalletModal) closePrivateWalletModal();
+        });
+    }
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && dom.privateWalletModal && !dom.privateWalletModal.classList.contains('hidden')) {
+            closePrivateWalletModal();
+        }
+    });
+    if (dom.privateWalletForm) {
+        dom.privateWalletForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const amount = Number(dom.privateWalletAmount.value);
+            const date = dom.privateWalletDate.value;
+            if (!Number.isFinite(amount) || amount <= 0) {
+                dom.privateWalletAmount.setCustomValidity('Enter an amount greater than ₹0.');
+                dom.privateWalletAmount.reportValidity();
+                return;
+            }
+            dom.privateWalletAmount.setCustomValidity('');
+            if (!isValidPrivateWalletDate(date)) {
+                showToast('Please enter a valid date');
+                return;
+            }
+            privateWalletEntries.unshift({ amount, date });
+            try {
+                savePrivateWallet();
+            } catch (error) {
+                privateWalletEntries.shift();
+                console.error('Unable to save Private Wallet data.', error);
+                showToast('Unable to save Private Wallet data');
+                return;
+            }
+            dom.privateWalletForm.reset();
+            closePrivateWalletModal();
+            renderPrivateWallet();
+            showToast('Money added to Private Wallet');
+        });
+    }
     if (dom.prevMonthBtn) {
         dom.prevMonthBtn.addEventListener('click', () => {
             if (state.activeMonthIndex > 0) {
@@ -1130,6 +1296,7 @@ function init() {
     state.activeMonthIndex = Math.min(Math.max(stored.activeMonthIndex, 0), state.months.length - 1);
     state.dataByMonth = stored.dataByMonth || {};
     state.theme = stored.theme || DEFAULT_THEME;
+    privateWalletEntries = loadPrivateWallet();
     applyTheme(state.theme);
     state.months.forEach((month) => {
         if (!state.dataByMonth[month.value]) {

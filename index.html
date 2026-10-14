@@ -221,6 +221,30 @@
 
                         <footer class="report-footer">Thank you for using SpendSmart. Keep tracking, keep growing!</footer>
                     </div>
+
+                    <section class="private-wallet-card card" aria-labelledby="private-wallet-title">
+                        <div class="private-wallet-header">
+                            <div>
+                                <h2 id="private-wallet-title"><i class="fa-solid fa-lock" aria-hidden="true"></i> Private Wallet</h2>
+                                <p class="private-wallet-caption">A separate place for savings you want to keep untouched.</p>
+                            </div>
+                            <span class="private-wallet-badge"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Private</span>
+                        </div>
+                        <div class="private-wallet-summary">
+                            <div>
+                                <p class="private-wallet-total-label">Total Saved</p>
+                                <p id="private-wallet-total" class="private-wallet-total" aria-live="polite">₹0</p>
+                            </div>
+                            <p id="private-wallet-entry-count" class="private-wallet-entry-count">0 saving entries</p>
+                        </div>
+                        <button id="private-wallet-add-btn" class="btn btn-primary" type="button">
+                            <i class="fa-solid fa-plus" aria-hidden="true"></i> Add Money
+                        </button>
+                        <div class="private-wallet-history">
+                            <h3>Saving History</h3>
+                            <ul id="private-wallet-history-list" class="private-wallet-list" aria-live="polite"></ul>
+                        </div>
+                    </section>
                 </section>
 
                 <!-- SECTION: Add Expense -->
@@ -514,6 +538,34 @@
 
             </div>
         </main>
+    </div>
+
+    <div id="private-wallet-modal" class="private-wallet-modal hidden" aria-hidden="true">
+        <div class="private-wallet-dialog card" role="dialog" aria-modal="true" aria-labelledby="private-wallet-modal-title">
+            <div class="private-wallet-dialog-header">
+                <h2 id="private-wallet-modal-title"><i class="fa-solid fa-lock" aria-hidden="true"></i> Add to Private Wallet</h2>
+                <button id="private-wallet-close-btn" class="icon-btn" type="button" aria-label="Close dialog">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <form id="private-wallet-form">
+                <div class="form-group">
+                    <label for="private-wallet-amount">Amount</label>
+                    <div class="private-wallet-amount-input">
+                        <span aria-hidden="true">₹</span>
+                        <input id="private-wallet-amount" name="amount" type="number" min="0.01" step="any" inputmode="decimal" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="private-wallet-date">Date</label>
+                    <input id="private-wallet-date" name="date" type="date" required>
+                </div>
+                <div class="private-wallet-form-actions">
+                    <button id="private-wallet-cancel-btn" class="btn private-wallet-cancel-btn" type="button">Cancel</button>
+                    <button class="btn btn-primary" type="submit"><i class="fa-solid fa-plus" aria-hidden="true"></i> Save Money</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Toast Notification -->
